@@ -1,0 +1,17 @@
+{
+  "name": "electron",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "hn-failte<failte@163.com>"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^6.0.12"
+  }
+}

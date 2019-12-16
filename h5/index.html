@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>electron</title>
+  </head>
+  <style>
+    .list-wrapper{
+      width: 80%;
+      height: 300px;
+    }
+    .chatting-list{
+      width: 80%;
+      height: 60px;
+    }
+    .user-input{
+    }
+    .user-input > input{
+      width: 300px;
+      height: 60px;
+    }
+    .user-input > button{
+      width: 300px;
+      height: 60px;
+    }
+    
+  </style>
+  <body>
+    <h1>private chating room</h1>
+    <div class="list-wrapper">
+      <ul id="list" class="chatting-list"></ul>
+    </div>
+    <div class="user-input">
+      <input id="content" type="text"><button id="submit">submit</button>
+    </div>
+  </body>
+<script>
+(function(undefined) {
+  // dom
+  const content = document.getElementById('content');
+  const submit = document.getElementById('submit');
+  const list = document.getElementById('list');
+
+  // socket
+  const socket = new WebSocket('ws://10.0.0.254:8080');
+
+  const send = (msg) => {
+    socket.send(msg);
+  }
+
+  socket.onopen = () => {
+      console.log("connected");
+  }
+
+  socket.onerror = () => {
+      console.log("err");
+  }
+
+  socket.onmessage = e => {
+      console.log(e);
+      let data = JSON.parse(e.data);
+      let li = document.createElement('li');
+      li.innerHTML = `<strong>${data.uid}</strong>: ${data.msg}`;
+      list.appendChild(li);
+  }
+
+  // event
+  submit.addEventListener('click', () => {
+    let msg = content.value.trim();
+    if(msg.toString().length > 0) {
+      let data = JSON.stringify({
+        uid: 'failte',
+        msg
+      })
+      send(data);
+    }
+  })
+})()
+</script>
+</html>
