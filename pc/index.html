@@ -2,8 +2,9 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>electron</title>
+    <title>private chating room</title>
   </head>
+  <link rel="stylesheet" href="./reset.css">
   <style>
     .list-wrapper{
       width: 80%;
@@ -14,16 +15,35 @@
       height: 60px;
     }
     .user-input{
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      height: 60px;
+      width: 800px;
+      margin-left: -400px;
+      display: flex;
     }
-    .user-input > input{
+    #nickname{
+      width: 100px;
+      height: 60px;
+      line-height: 60px;
+    }
+    #content{
       width: 300px;
       height: 60px;
+      line-height: 60px;
     }
-    .user-input > button{
+    #submit{
       width: 300px;
       height: 60px;
+      line-height: 60px;
     }
-    
+    h1{
+      margin: 40px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+    }
   </style>
   <body>
     <h1>private chating room</h1>
@@ -31,18 +51,27 @@
       <ul id="list" class="chatting-list"></ul>
     </div>
     <div class="user-input">
-      <input id="content" type="text"><button id="submit">submit</button>
+      <input type="text" id="nickname" placeholder="输入昵称" value="" /><input id="content" type="text" placeholder="输入需要提交的内容"><button id="submit">提交内容</button>
     </div>
+    <!-- <p>Node <script>document.write(process.versions.node)</script></p>
+    <p>Chrome <script>document.write(process.versions.chrome)</script></p>
+    <p>Electron <script>document.write(process.versions.electron)</script></p> -->
   </body>
 <script>
 (function(undefined) {
   // dom
+  const nickname = document.getElementById('nickname');
   const content = document.getElementById('content');
   const submit = document.getElementById('submit');
   const list = document.getElementById('list');
 
+  // uid
+  const uid = Math.random().toString(16).slice(2) + new Date().getTime()
+  let username = '';
+  let defaultUsername = '连接者' + new Date().getTime();
+
   // socket
-  const socket = new WebSocket('ws://localhost:8080');
+  const socket = new WebSocket('ws://10.0.0.254:8080');
 
   const send = (msg) => {
     socket.send(msg);
@@ -60,21 +89,27 @@
       console.log(e);
       let data = JSON.parse(e.data);
       let li = document.createElement('li');
-      li.innerHTML = `<strong>${data.uid}</strong>: ${data.msg}`;
+      li.innerHTML = `<strong>${data.uid === uid ? '我' : data.username}</strong>: ${data.msg}`;
       list.appendChild(li);
   }
 
   // event
-  submit.addEventListener('click', () => {
+  content.onkeydown = submit.onclick = (e) => {
+    if(e.target.id === 'content' && e.keyCode !== 13) return;
     let msg = content.value.trim();
     if(msg.toString().length > 0) {
       let data = JSON.stringify({
-        uid: 'failte',
+        uid,
+        username: username !== '' ? username : defaultUsername,
         msg
       })
       send(data);
+      content.value = '';
     }
-  })
+  }
+  nickname.onchange = () => {
+    username = nickname.value.toString().trim();
+  }
 })()
 </script>
 </html>

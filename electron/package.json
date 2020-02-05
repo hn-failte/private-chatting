@@ -4,14 +4,19 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "npx electron-packager ."
   },
   "keywords": [
-    "hn-failte<failte@163.com>"
+    "websocket",
+    "electron"
   ],
-  "author": "",
+  "author": "hn-failte<failte@163.com>",
   "license": "ISC",
   "dependencies": {
     "electron": "^6.0.12"
+  },
+  "devDependencies": {
+    "electron-packager": "^14.2.0"
   }
 }
