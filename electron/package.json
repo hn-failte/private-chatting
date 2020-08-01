@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "npx electron-packager ."
+    "build": "electron-packager ./ chat --out ./dist --app-version 1.0.0 --overwrite --icon=./app/img/icon/icon.ico"
   },
   "keywords": [
     "websocket",
@@ -13,10 +13,15 @@
   ],
   "author": "hn-failte<failte@163.com>",
   "license": "ISC",
-  "dependencies": {
-    "electron": "^6.0.12"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "electron-packager": "^14.2.0"
+    "electron": "^9.1.2",
+    "electron-packager": "^15.0.0"
+  },
+  "build": {
+    "appId": "your.id",
+    "mac": {
+      "category": "your.app.category.type"
+    }
   }
 }

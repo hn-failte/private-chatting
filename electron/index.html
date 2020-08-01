@@ -1,115 +1,206 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>private chating room</title>
   </head>
-  <link rel="stylesheet" href="./reset.css">
+  <link rel="stylesheet" href="./reset.css" />
   <style>
-    .list-wrapper{
-      width: 80%;
-      height: 300px;
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      max-width: 1080px;
+      min-width: 480px;
+      margin: 0 auto;
+      padding: 42px 0 44px;
+      box-sizing: border-box;
     }
-    .chatting-list{
-      width: 80%;
-      height: 60px;
-    }
-    .user-input{
-      position: fixed;
-      left: 50%;
-      bottom: 0;
-      height: 60px;
-      width: 800px;
-      margin-left: -400px;
-      display: flex;
-    }
-    #nickname{
-      width: 100px;
-      height: 60px;
-      line-height: 60px;
-    }
-    #content{
-      width: 300px;
-      height: 60px;
-      line-height: 60px;
-    }
-    #submit{
-      width: 300px;
-      height: 60px;
-      line-height: 60px;
-    }
-    h1{
-      margin: 40px;
+    h1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 42px;
+      line-height: 42px;
       font-size: 24px;
       font-weight: bold;
       text-align: center;
     }
+    .list-wrapper {
+      font-size: 16px;
+      width: 100%;
+      height: 100%;
+      background: skyblue;
+      border-radius: 8px;
+    }
+    .chatting-list {
+      margin: 0 12px;
+      box-sizing: border-box;
+    }
+    .chatting-list li {
+      margin: 0 auto 4px;
+      color: #333;
+      font-size: 16px;
+      overflow: hidden;
+    }
+    .chatting-list li strong {
+      text-align: right;
+      display: block;
+      font-size: 16px;
+      padding: 4px 0;
+    }
+    .chatting-list li i {
+      display: block;
+      font-size: 16px;
+      padding: 4px 0;
+    }
+    .chatting-list li strong + span {
+      float: right;
+      background: #f0f0f0;
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    .chatting-list li i + span {
+      float: left;
+      background: #439057;
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    .user-input {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      height: 44px;
+      line-height: 44px;
+      width: 100%;
+      text-align: center;
+    }
+    #nickname {
+      font-size: 16px;
+      width: 100px;
+      height: 36px;
+      line-height: 36px;
+      padding: 0 4px;
+      outline: none;
+      box-sizing: border-box;
+      vertical-align: middle;
+    }
+    #content {
+      font-size: 16px;
+      width: 300px;
+      height: 36px;
+      line-height: 36px;
+      padding: 0 8px;
+      outline: none;
+      box-sizing: border-box;
+      vertical-align: middle;
+    }
+    #submit {
+      width: 100px;
+      height: 36px;
+      font-size: 16px;
+      line-height: 36px;
+      color: #fff;
+      background: #439057;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      vertical-align: middle;
+    }
   </style>
   <body>
-    <h1>private chating room</h1>
-    <div class="list-wrapper">
-      <ul id="list" class="chatting-list"></ul>
-    </div>
-    <div class="user-input">
-      <input type="text" id="nickname" placeholder="输入昵称" value="" /><input id="content" type="text" placeholder="输入需要提交的内容"><button id="submit">提交内容</button>
+    <div class="container">
+      <h1>匿名聊天室</h1>
+      <div class="list-wrapper">
+        <ul id="list" class="chatting-list"></ul>
+      </div>
+      <div class="user-input">
+        <input
+          type="text"
+          id="nickname"
+          placeholder="昵称/匿名"
+          value=""
+        /><input id="content" type="text" autofocus /><button id="submit">
+          提交内容
+        </button>
+      </div>
     </div>
     <!-- <p>Node <script>document.write(process.versions.node)</script></p>
     <p>Chrome <script>document.write(process.versions.chrome)</script></p>
     <p>Electron <script>document.write(process.versions.electron)</script></p> -->
   </body>
-<script>
-(function(undefined) {
-  // dom
-  const nickname = document.getElementById('nickname');
-  const content = document.getElementById('content');
-  const submit = document.getElementById('submit');
-  const list = document.getElementById('list');
+  <script>
+    (function(undefined) {
+      // dom
+      const nickname = document.getElementById("nickname");
+      const content = document.getElementById("content");
+      const submit = document.getElementById("submit");
+      const list = document.getElementById("list");
 
-  // uid
-  const uid = Math.random().toString(16).slice(2) + new Date().getTime()
-  let username = '';
-  let defaultUsername = '连接者' + new Date().getTime();
+      // uid
+      const uid =
+        Math.random()
+          .toString(16)
+          .slice(2) + new Date().getTime();
+      let username = "";
+      let defaultUsername = "连接者" + new Date().getTime();
 
-  // socket
-  const socket = new WebSocket('ws://10.0.0.254:8080');
+      // socket
+      const socket = new WebSocket("ws://10.0.0.254:8080");
 
-  const send = (msg) => {
-    socket.send(msg);
-  }
+      const send = msg => {
+        socket.send(msg);
+      };
 
-  socket.onopen = () => {
-      console.log("connected");
-  }
+      socket.onopen = () => {
+        console.log("connected");
+      };
 
-  socket.onerror = () => {
-      console.log("err");
-  }
+      socket.onerror = () => {
+        console.log("err");
+      };
 
-  socket.onmessage = e => {
-      console.log(e);
-      let data = JSON.parse(e.data);
-      let li = document.createElement('li');
-      li.innerHTML = `<strong>${data.uid === uid ? '我' : data.username}</strong>: ${data.msg}`;
-      list.appendChild(li);
-  }
+      socket.onmessage = e => {
+        const data = JSON.parse(e.data);
+        const li = document.createElement("li");
+        const nameTag = document.createElement(
+          data.uid === uid ? "strong" : "i"
+        );
+        const contentSpan = document.createElement("span");
+        nameTag.appendChild(
+          document.createTextNode(
+            data.uid === uid
+              ? "我（" +
+                  (nickname.value.toString().trim() || defaultUsername) +
+                  "）"
+              : data.username
+          )
+        );
+        contentSpan.appendChild(document.createTextNode(data.msg));
+        li.appendChild(nameTag);
+        li.appendChild(contentSpan);
+        list.appendChild(li);
+      };
 
-  // event
-  content.onkeydown = submit.onclick = (e) => {
-    if(e.target.id === 'content' && e.keyCode !== 13) return;
-    let msg = content.value.trim();
-    if(msg.toString().length > 0) {
-      let data = JSON.stringify({
-        uid,
-        username: username !== '' ? username : defaultUsername,
-        msg
-      })
-      send(data);
-      content.value = '';
-    }
-  }
-  nickname.onchange = () => {
-    username = nickname.value.toString().trim();
-  }
-})()
-</script>
+      // event
+      content.onkeydown = submit.onclick = e => {
+        if (e.target.id === "content" && e.keyCode !== 13) return;
+        let msg = content.value.trim();
+        if (msg.toString().length > 0) {
+          let data = JSON.stringify({
+            uid,
+            username: username !== "" ? username : defaultUsername,
+            msg
+          });
+          send(data);
+          content.value = "";
+        }
+      };
+      nickname.onchange = () => {
+        username = nickname.value.toString().trim();
+      };
+    })();
+  </script>
 </html>

@@ -1,136 +1,172 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>private chating room</title>
     <script src="./flexible.js"></script>
   </head>
-  <link rel="stylesheet" href="./reset.css">
+  <link rel="stylesheet" href="./reset.css" />
   <style>
-    .list-wrapper{
+    h1 {
+      height: 6vh;
+      line-height: 6vh;
+      font-size: 0.36rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .list-wrapper {
       font-size: 0.42rem;
       margin: 0;
       padding: 0;
       width: 100%;
-      height: 3rem;
+      height: 88vh;
+      background: skyblue;
     }
-    .list-wrapper ul{
-      width: 100%;
-      padding: 0.1rem;
+    .chatting-list {
+      margin: 0 0.3rem;
       box-sizing: border-box;
     }
-    .list-wrapper li{
-      margin: 0.1rem 0;
+    .chatting-list li {
+      margin: 0 auto 0.1rem;
+      color: #333;
+      font-size: 0.3rem;
+      overflow: hidden;
+    }
+    .chatting-list li strong {
+      text-align: right;
+      display: block;
+      font-size: 0.3rem;
+    }
+    .chatting-list li i {
+      display: block;
+      font-size: 0.3rem;
+    }
+    .chatting-list li strong + span {
+      float: right;
       background: #f0f0f0;
-      color: #333;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.1rem;
     }
-    .list-wrapper strong{
-      font-size: 0.42rem;
-      color: #333;
+    .chatting-list li i + span {
+      float: left;
+      background: #439057;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.1rem;
     }
-    .chatting-list{
-      width: 80%;
-      height: 0.6rem;
-    }
-    .user-input{
+    .user-input {
       position: fixed;
       left: 0;
       bottom: 0;
-      height: 0.6rem;
+      height: 6vh;
       width: 100%;
       display: flex;
       justify-content: space-between;
     }
-    #nickname{
+    #nickname {
       font-size: 0.3rem;
-      width: 1.4rem;
-      height: 0.6rem;
+      width: 20vw;
+      height: 100%;
       line-height: 0.6rem;
     }
-    #content{
+    #content {
       font-size: 0.3rem;
       width: 4rem;
-      height: 0.6rem;
+      height: 100%;
       line-height: 0.6rem;
+      padding: 0 0.1rem;
     }
-    #submit{
+    #submit {
       width: 2rem;
-      height: 0.6rem;
-      font-size: 0.36rem;
+      height: 100%;
+      font-size: 0.3rem;
       line-height: 0.6rem;
-    }
-    h1{
-      margin: 0.3rem;
-      font-size: 0.42rem;
-      font-weight: bold;
-      text-align: center;
+      color: #fff;
+      background: #439057;
     }
   </style>
   <body>
-    <h1>private chating room</h1>
+    <h1>匿名聊天室</h1>
     <div class="list-wrapper">
       <ul id="list" class="chatting-list"></ul>
     </div>
     <div class="user-input">
-      <input type="text" id="nickname" placeholder="输入昵称" value="" /><input id="content" type="text" placeholder="输入需要提交的内容"><button id="submit">提交内容</button>
+      <input type="text" id="nickname" placeholder="昵称/匿名" value="" /><input
+        id="content"
+        type="text"
+        autofocus
+      /><button id="submit">提交内容</button>
     </div>
-    <!-- <p>Node <script>document.write(process.versions.node)</script></p>
-    <p>Chrome <script>document.write(process.versions.chrome)</script></p>
-    <p>Electron <script>document.write(process.versions.electron)</script></p> -->
   </body>
-<script>
-(function(undefined) {
-  // dom
-  const nickname = document.getElementById('nickname');
-  const content = document.getElementById('content');
-  const submit = document.getElementById('submit');
-  const list = document.getElementById('list');
+  <script>
+    (function(undefined) {
+      // dom
+      const nickname = document.getElementById("nickname");
+      const content = document.getElementById("content");
+      const submit = document.getElementById("submit");
+      const list = document.getElementById("list");
 
-  // uid
-  const uid = Math.random().toString(16).slice(2) + new Date().getTime()
-  let username = '';
-  let defaultUsername = '连接者' + new Date().getTime();
+      // uid
+      const uid =
+        Math.random()
+          .toString(16)
+          .slice(2) + new Date().getTime();
+      let username = "";
+      let defaultUsername = "连接者" + new Date().getTime();
 
-  // socket
-  const socket = new WebSocket('ws://10.0.0.254:8080');
+      // socket
+      const socket = new WebSocket("ws://10.0.0.254:8080");
 
-  const send = (msg) => {
-    socket.send(msg);
-  }
+      const send = msg => {
+        socket.send(msg);
+      };
 
-  socket.onopen = () => {
-      console.log("connected");
-  }
+      socket.onopen = () => {
+        console.log("connected");
+      };
 
-  socket.onerror = () => {
-      console.log("err");
-  }
+      socket.onerror = () => {
+        console.log("err");
+      };
 
-  socket.onmessage = e => {
-      console.log(e);
-      let data = JSON.parse(e.data);
-      let li = document.createElement('li');
-      li.innerHTML = `<strong>${data.uid === uid ? '我' : data.username}</strong>: ${data.msg}`;
-      list.appendChild(li);
-  }
+      socket.onmessage = e => {
+        const data = JSON.parse(e.data);
+        const li = document.createElement("li");
+        const nameTag = document.createElement(
+          data.uid === uid ? "strong" : "i"
+        );
+        const contentSpan = document.createElement("span");
+        nameTag.appendChild(
+          document.createTextNode(
+            data.uid === uid
+              ? "我（" +
+                  (nickname.value.toString().trim() || defaultUsername) +
+                  "）"
+              : data.username
+          )
+        );
+        contentSpan.appendChild(document.createTextNode(data.msg));
+        li.appendChild(nameTag);
+        li.appendChild(contentSpan);
+        list.appendChild(li);
+      };
 
-  // event
-  content.onkeydown = submit.onclick = (e) => {
-    if(e.target.id === 'content' && e.keyCode !== 13) return;
-    let msg = content.value.trim();
-    if(msg.toString().length > 0) {
-      let data = JSON.stringify({
-        uid,
-        username: username !== '' ? username : defaultUsername,
-        msg
-      })
-      send(data);
-      content.value = '';
-    }
-  }
-  nickname.onchange = () => {
-    username = nickname.value.toString().trim();
-  }
-})()
-</script>
+      // event
+      content.onkeydown = submit.onclick = e => {
+        if (e.target.id === "content" && e.keyCode !== 13) return;
+        let msg = content.value.trim();
+        if (msg.toString().length > 0) {
+          let data = JSON.stringify({
+            uid,
+            username: username !== "" ? username : defaultUsername,
+            msg
+          });
+          send(data);
+          content.value = "";
+        }
+      };
+      nickname.onchange = () => {
+        username = nickname.value.toString().trim();
+      };
+    })();
+  </script>
 </html>
