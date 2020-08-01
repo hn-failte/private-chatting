@@ -114,7 +114,7 @@
       let defaultUsername = "连接者" + new Date().getTime();
 
       // socket
-      const socket = new WebSocket("ws://10.0.0.254:8080");
+      const socket = new WebSocket("ws://10.8.60.59:10000");
 
       const send = msg => {
         socket.send(msg);

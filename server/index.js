@@ -1,6 +1,6 @@
 const websocket = require('ws');
 
-const ws = new websocket.Server({port: 8080});
+const ws = new websocket.Server({port: 10000});
 
 const fs = require('fs');
 

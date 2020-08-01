@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager ./ chat --out ./dist --app-version 1.0.0 --overwrite --icon=./app/img/icon/icon.ico"
+    "build": "electron-packager ./ chat --all --out ./dist --app-version 1.0.0 --overwrite --icon=./app/img/icon/icon.ico"
   },
   "keywords": [
     "websocket",
@@ -17,11 +17,5 @@
   "devDependencies": {
     "electron": "^9.1.2",
     "electron-packager": "^15.0.0"
-  },
-  "build": {
-    "appId": "your.id",
-    "mac": {
-      "category": "your.app.category.type"
-    }
   }
 }
