@@ -4,48 +4,48 @@
 
 ### 1、发展史
 
-说起 websocket 的由来就必须说到轮循、长轮循、长连接。
+> 说起 websocket 的由来，就必须得说到轮循、长轮循、长连接。
 
-**轮询**
+#### 轮询
 
-轮询，也叫短轮循，是指由浏览器每隔一段时间向服务器发出 HTTP 请求，然后服务器返回最新的数据给客户端。
+**轮询**，也叫 **短轮循**，是指由浏览器每隔一段时间向服务器发出 HTTP 请求，然后服务器返回最新的数据给客户端。
 
 最开始，很多网站为了实现推送技术，所用的技术都是轮询。
 
 但是很明显，持续不断的请求在用户数量上去后，轮循也会产生很多无效的请求，会给服务器带来巨大的压力。
 
-**长轮循**
+#### 长轮循
 
-长轮循是指服务器收到客户端发来的请求后，不立即进行响应，而是先将这个请求挂起，然后判断服务器端数据是否有更新。若有数据更新，则进行正常返回响应，如果一直没有数据更新，则到达服务短指定的时间限制后才返回。
+**长轮循** 是指服务器收到客户端发来的请求后，不立即进行响应，而是先将这个请求挂起，然后判断服务器端数据是否有更新。若有数据更新，则进行正常返回响应，如果一直没有数据更新，则到达服务短指定的时间限制后才返回。
 
 比起轮循，长轮循可以减少大量的无效请求，但是问题是，即便是挂起，也会消耗资源，在用户数量多了后，同样会使得服务器压力巨大。
 
-**长连接**
+#### 长连接
 
-长连接是 HTML 新增的功能，全称为 Server-Sent Events(SSE)，SSE 可以允许服务端推送数据到客户端，而不需要建立或保持大量的客户端发往服务器端的请求，节约了很多资源，提升应用性能。
+**长连接** 是 HTML 新增的功能，全称为 Server-Sent Events(SSE)，SSE 可以允许服务端推送数据到客户端，而不需要建立或保持大量的客户端发往服务器端的请求，节约了很多资源，提升应用性能。
 
 比起轮循和长轮循，长连接解决了服务端无法推送的问题，但是依旧还有一个未解决的问题，这样子的通讯是半双工的，在某些场景并不是很适合。
 
 长连接在前端实现比较简单，相关代码如下：
 
 ```js
-var source = new EventSource('api');
+var source = new EventSource("api");
 // 建立连接的回调
 source.onopen = () => {};
 // 连接失败的回调
-source.onerror = () => {}
+source.onerror = () => {};
 // 监听自定义的事件，服务端可以发送这个自定义事件进行触发
-source.addEventListener('myevent', event => {
-    console.log(event.id, event.data)
-})
+source.addEventListener("myevent", (event) => {
+  console.log(event.id, event.data);
+});
 // 监听所有事件
-source.onmessage = event => {
-    console.log(event.id, event.data)
-    // 服务端发送CLOSE消息ID时
-    if(event.id === 'CLOSE') {
-        source.close()
-    }
-}
+source.onmessage = (event) => {
+  console.log(event.id, event.data);
+  // 服务端发送CLOSE消息ID时
+  if (event.id === "CLOSE") {
+    source.close();
+  }
+};
 ```
 
 ### 2、websocket 的意义
@@ -74,6 +74,8 @@ electron 可以构建 windows、linux、macos 三个平台的桌面应用。
 
 electron 使得前端开发者可以使用前端领域的东西开发桌面应用。
 
+electron 主要由 v8、chrome driver
+
 ### 2、electron 项目结构
 
 一个 electron 项目主要由 package.json、main.js 和 index.html 三部分组成。
@@ -84,15 +86,13 @@ main.js 是应用的后端运行时，是应用和系统之间的桥梁。
 
 index.html 是应用的前端入口。
 
-由于
-
 简单的说，electron 为开发者提供了系统的 API 的调用。
 
 ## 三、项目思路
 
 由于 websocket 的全双工特性，我们可以通过与服务端建立通讯，将多个会话聚合在一起，便可以实现多人聊天
 
-1、数据格式统一
+#### 1、数据格式统一
 
 首先需要做的，是需要将传输的数据格式统一
 
@@ -107,7 +107,7 @@ index.html 是应用的前端入口。
 }
 ```
 
-2、服务端处理
+#### 2、服务端处理
 
 服务端则只需要处理传输过来的数据将数据传输給所有的连接用户即可：
 
@@ -140,9 +140,9 @@ ws.on("connection", (socket) => {
 });
 ```
 
-3、web 前端的实现
+#### 3、web 前端的实现
 
-websocket相关代码
+websocket 相关代码
 
 ```js
 // 建立连接
@@ -168,15 +168,56 @@ socket.onmessage = (e) => {
 
 由于带有用户输入的行为，前端渲染必须要注意 **XSS 攻击**。
 
-预防XSS攻击，最好的方式是不要使用HTML渲染。
+预防 XSS 攻击，最好的方式是不要使用 HTML 渲染。
 
-4、electron 的实现
+考虑到通用性，其实可以将 ip 地址抽离给用户填写。
 
-由于 electron 是基于 v8、chrome，大部分的 web 代码都可以直接搬过来使用。
+#### 4、electron 的实现
+
+由于 electron 是基于 v8、chrome driver，大部分的 web 代码都可以直接搬过来使用。
 
 而唯一需要处理的是将应用编译成桌面程序。
 
-这里，我们先将 web 端的代码迁移过来，运行 OK 后，我们在项目中添加 electron-packager: `npm i electron -D`
+这里，我们先将 web 端的代码迁移过来。
+
+然后在 node 的运行时中，关键代码如下：
+
+```js
+const { app, BrowserWindow } = require("electron");
+let win;
+
+function createWindow() {
+  win = new BrowserWindow({
+    width: 1280,
+    height: 1280,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  });
+
+  win.loadFile("index.html");
+
+  win.on("closed", () => {
+    win = null;
+  });
+}
+
+app.on("ready", createWindow);
+```
+
+可以很清晰的看到 node 进程 通过实例化 BrowserWindow 对象创建了一个窗口 ，通过 loadFile 方法开启了渲染进程。
+
+添加执行命令：
+
+```json
+{
+  "start": "electron ."
+}
+```
+
+这样就可以进行调试了。
+
+运行 OK 后，我们在项目中添加 electron-packager: `npm i electron -D`
 
 然后，添加执行命令：
 
@@ -210,13 +251,13 @@ npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 
 ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 
-注意：下载全平台的预编译文件会很慢，建议根据自己的需求微调构建命令进行构建
+注意：下载全平台的预编译文件会很慢，建议根据自己的需求微调构建命令进行构建。
 
-5、完成
+#### 5、完成
 
-在执行 build 构建命令后，我们会得到一个 dist 目录，里面会包含所有的平台所有架构的应用包
+在执行 build 构建命令后，我们会得到一个 dist 目录，里面会包含所有平台所有架构的应用包
 
-到此为止，一个简单的跨 pc 平台的应用就出来了（macos 由于不开源，只能在 macos 平台上构建）
+到此为止，一个简单的跨 pc 平台的应用就出来了（macos app 由于不开源只能在 macos 平台上构建）
 
 ## 四、效果图
 
@@ -260,6 +301,8 @@ windows 端应用下载链接（mac 和 linux 就不公布了）：http://10.8.6
 这次的重点主要是 websocket、electron-packager，而 electron 只是入门，后面将在 electron 上深入，敬请期待
 
 ## 八、相关链接
+
+[Electron 官网](https://www.electronjs.org/)
 
 [Electron 中文文档](https://wizardforcel.gitbooks.io/electron-doc/content/index.html)
 
